@@ -281,7 +281,7 @@
         <div class="card">
             <div class="title">🎁 Opari, bat helmuga berri bat…</div>
             <div class="subtitle">               
-   Asma ezazu elkarrekin joango garen hiri ezezaguna. 3 saiakera dituzu asmatzeko. 3 pista edukiko dituzu.Erabili pistak jakinduriaz! 💜
+   Asma ezazu elkarrekin joango garen hiri ezezaguna. 3 saiakera dituzu asmatzeko. 4 pista edukiko dituzu.Erabili pistak jakinduriaz! 💜
             </div>
 
             <div class="attempts" id="attemptsCounter">
@@ -534,12 +534,13 @@
             celebrationArea.classList.remove('hidden');
             
             if (success) {
-                finalMessage.textContent = '✅ ¡SÍ! El destino es EDIMBURGO 🏰✨\n\nNos vamos juntos a descubrir esta ciudad mágica. ¡Prepara la maleta! 💜';
-                vibrate([100, 50, 100, 50, 200]); // Patrón alegre
-            } else {
-                finalMessage.textContent = '💜 El destino era... ¡EDIMBURGO! 🏰✨\n\nAunque no lo adivinaste, nos vamos igualmente a esta ciudad increíble. ¡Será una aventura inolvidable! 🎉';
-                vibrate([100, 100, 100]); // Vibración suave
-            }
+    finalMessage.textContent = '✅ BAI! Helmuga EDIMBURGO da 🏰✨\n\nElkarrekin joango gara hiri magiko hau ezagutzera. Maleta prestatzen hasi! 💜';
+    vibrate([100, 50, 100, 50, 200]); // Pozeko bibrazioa
+} else {
+    finalMessage.textContent = '💜 Helmuga... EDIMBURGO da! 🏰✨\n\nAsmatu ez baduzu ere, hiri zoragarri honetara elkarrekin joango gara. Abentura ahaztezina izango da! 🎉';
+    vibrate([100, 100, 100]); // Bibrazio leuna
+}
+
             
             createConfetti();
         }
