@@ -279,7 +279,7 @@
     
     <div class="container">
         <div class="card">
-            <div class="title">🎁 Opari bat helmuga berri bat…</div>
+            <div class="title">🎁 Opari, bat helmuga berri bat…</div>
             <div class="subtitle">               
    Asma ezazu elkarrekin joango garen hiri ezezaguna. 3 saiakera dituzu asmatzeko. 3 pista edukiko dituzu.Erabili pistak jakinduriaz! 💜
             </div>
@@ -316,10 +316,10 @@
 
         <div class="hints-card">
             <div class="hint-title">🗺️ Pista erabilgarriak:</div>
-            <div class="hint-item" id="hint4">
+            <div class="hint-item visible" id="hint4">
                 🎵 500 milia ibiltzeko abesti bat: <button class="btn-music" id="playProclaimersBtn">▶</button>
             </div>
-            <div class="hint-item visible" id="hint1">
+            <div class="hint-item" id="hint1">
                 Gazteluen hiria, harrizko kaleak eta aire misteriotsua.
             </div>
             <div class="hint-item" id="hint5">
@@ -335,10 +335,10 @@
         // Estado del juego
         let attempts = 0;
         let maxAttempts = 3;
-        // Array con el orden correcto de las pistas (hint1 ya está visible)
-        // Orden de desbloqueo: hint1 (visible) -> hint4 -> hint5 -> hint3
-        const hintOrder = ['hint1', 'hint4', 'hint5', 'hint3'];
-        let currentHintIndex = 0; // hint1 está visible (índice 0)
+        // Array con el orden correcto de las pistas (hint4 ya está visible)
+        // Orden de desbloqueo: hint4 (visible) -> hint1 -> hint5 -> hint3
+        const hintOrder = ['hint4', 'hint1', 'hint5', 'hint3'];
+        let currentHintIndex = 0; // hint4 está visible (índice 0)
         let gameOver = false;
 
         // Elementos del DOM
@@ -616,7 +616,7 @@
                 const hintElement = document.getElementById(hintId);
                 if (hintElement) {
                     if (index === 0) {
-                        // Mantener hint1 visible
+                        // Mantener hint4 visible
                         hintElement.classList.add('visible');
                     } else {
                         // Ocultar las demás
