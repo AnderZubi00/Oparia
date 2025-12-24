@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎁 Un Regalo Especial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #2d3748;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #667eea;
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #718096;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .attempts {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            touch-action: manipulation;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #667eea;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:active {
+            background: #edf2f7;
+            transform: scale(0.98);
+        }
+
+        .btn-hint {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-hint:active {
+            transform: scale(0.98);
+        }
+
+        .hints-card {
+            background: #fffaf0;
+            border-left: 4px solid #f6ad55;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .hint-title {
+            font-weight: 700;
+            color: #c05621;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .hint-item {
+            padding: 10px 0;
+            color: #744210;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .hint-item.visible {
+            display: block;
+        }
+
+        .hint-item::before {
+            content: "💡 ";
+            margin-right: 5px;
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .message.error {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .message.fail {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .message.success {
+            background: #c6f6d5;
+            color: #2f855a;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .celebration {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .celebration-emoji {
+            font-size: 60px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        @media (max-width: 400px) {
+            .card {
+                padding: 25px 20px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            button {
+                padding: 14px;
+                font-size: 16px;
+            }
+
+            input[type="text"] {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confettiCanvas"></canvas>
+    
+    <div class="container">
+        <div class="card">
+            <div class="title">🎁 Un regalo con destino…</div>
+            <div class="subtitle">
+                Adivina la ciudad donde nos vamos juntos. Tienes 3 intentos para descubrirlo. ¡Usa las pistas con sabiduría! 💜
+            </div>
+
+            <div class="attempts" id="attemptsCounter">
+                Intentos: <span id="attemptsUsed">0</span>/3
+            </div>
+
+            <div class="message" id="messageBox"></div>
+
+            <div id="gameArea">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="cityInput" 
+                        placeholder="Escribe el nombre de la ciudad"
+                        autocapitalize="words"
+                        inputmode="text"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <button class="btn-primary" id="guessBtn">Probar 🚀</button>
+                <button class="btn-hint" id="hintBtn">Dame otra pista 💡</button>
+            </div>
+
+            <div id="celebrationArea" class="celebration hidden">
+                <span class="celebration-emoji">🏰✨</span>
+                <div class="message success show" id="finalMessage"></div>
+            </div>
+
+            <button class="btn-secondary" id="resetBtn">Reiniciar 🔄</button>
+        </div>
+
+        <div class="hints-card">
+            <div class="hint-title">🗺️ Pistas disponibles:</div>
+            <div class="hint-item visible" id="hint1">
+                Ciudad de castillos, calles de piedra y un aire misterioso.
+            </div>
+            <div class="hint-item" id="hint2">
+                Tiene un castillo famoso en lo alto y una calle histórica llamada Royal Mile.
+            </div>
+            <div class="hint-item" id="hint3">
+                Es la capital de Escocia. Hogar de un festival enorme y paisajes dramáticos.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado del juego
+        let attempts = 0;
+        let maxAttempts = 3;
+        let currentHint = 1;
+        let gameOver = false;
+
+        // Elementos del DOM
+        const cityInput = document.getElementById('cityInput');
+        const guessBtn = document.getElementById('guessBtn');
+        const hintBtn = document.getElementById('hintBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const messageBox = document.getElementById('messageBox');
+        const attemptsUsed = document.getElementById('attemptsUsed');
+        const gameArea = document.getElementById('gameArea');
+        const celebrationArea = document.getElementById('celebrationArea');
+        const finalMessage = document.getElementById('finalMessage');
+
+        // Función para normalizar texto
+        function normalizeText(text) {
+            return text
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+        }
+
+        // Función de vibración
+        function vibrate(pattern) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        // Mostrar mensaje temporal
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = 'message show ' + type;
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000);
+        }
+
+        // Desbloquear siguiente pista
+        function unlockNextHint() {
+            if (currentHint < 3) {
+                currentHint++;
+                document.getElementById('hint' + currentHint).classList.add('visible');
+                vibrate(50); // Vibración suave
+                
+                if (currentHint === 3) {
+                    hintBtn.disabled = true;
+                    hintBtn.textContent = 'No hay más pistas 💡';
+                    hintBtn.style.opacity = '0.6';
+                }
+            }
+        }
+
+        // Botón de pista
+        hintBtn.addEventListener('click', () => {
+            if (currentHint < 3 && !gameOver) {
+                unlockNextHint();
+            }
+        });
+
+        // Confetti
+        function createConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const confettiPieces = [];
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#ffd700', '#ff69b4'];
+
+            for (let i = 0; i < 150; i++) {
+                confettiPieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * 10 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 10,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+                    tiltAngle: 0
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                confettiPieces.forEach((p, index) => {
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r / 2;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r);
+                    ctx.stroke();
+
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.tilt = Math.sin(p.tiltAngle) * 15;
+
+                    if (p.y > canvas.height) {
+                        confettiPieces.splice(index, 1);
+                    }
+                });
+
+                if (confettiPieces.length > 0) {
+                    requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            draw();
+        }
+
+        // Mostrar celebración
+        function showCelebration(success) {
+            gameOver = true;
+            gameArea.classList.add('hidden');
+            celebrationArea.classList.remove('hidden');
+            
+            if (success) {
+                finalMessage.textContent = '✅ ¡SÍ! El destino es EDIMBURGO 🏰✨\n\nNos vamos juntos a descubrir esta ciudad mágica. ¡Prepara la maleta! 💜';
+                vibrate([100, 50, 100, 50, 200]); // Patrón alegre
+            } else {
+                finalMessage.textContent = '💜 El destino era... ¡EDIMBURGO! 🏰✨\n\nAunque no lo adivinaste, nos vamos igualmente a esta ciudad increíble. ¡Será una aventura inolvidable! 🎉';
+                vibrate([100, 100, 100]); // Vibración suave
+            }
+            
+            createConfetti();
+        }
+
+        // Comprobar respuesta
+        function checkGuess() {
+            if (gameOver) return;
+
+            const guess = cityInput.value;
+
+            // Validar que no esté vacío
+            if (!guess.trim()) {
+                showMessage('Escribe una ciudad 😊', 'error');
+                vibrate(50);
+                return;
+            }
+
+            attempts++;
+            attemptsUsed.textContent = attempts;
+
+            // Normalizar y comparar
+            const normalizedGuess = normalizeText(guess);
+            const correctAnswers = ['edimburgo', 'edinburgh'];
+
+            if (correctAnswers.includes(normalizedGuess)) {
+                // ¡CORRECTO!
+                showCelebration(true);
+            } else {
+                // Incorrecto
+                vibrate(100); // Vibración más marcada
+
+                if (attempts >= maxAttempts) {
+                    // Se acabaron los intentos
+                    showCelebration(false);
+                } else {
+                    // Aún quedan intentos
+                    showMessage('Nope 😅 Intenta otra vez', 'fail');
+                    cityInput.value = '';
+                    cityInput.focus();
+                    
+                    // Desbloquear siguiente pista al fallar
+                    if (currentHint < 3) {
+                        setTimeout(() => {
+                            unlockNextHint();
+                        }, 500);
+                    }
+                }
+            }
+        }
+
+        // Event listeners
+        guessBtn.addEventListener('click', checkGuess);
+
+        cityInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkGuess();
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            // Resetear estado
+            attempts = 0;
+            currentHint = 1;
+            gameOver = false;
+            attemptsUsed.textContent = '0';
+            cityInput.value = '';
+            messageBox.className = 'message';
+            
+            // Resetear pistas
+            document.getElementById('hint2').classList.remove('visible');
+            document.getElementById('hint3').classList.remove('visible');
+            
+            // Resetear botón de pistas
+            hintBtn.disabled = false;
+            hintBtn.textContent = 'Dame otra pista 💡';
+            hintBtn.style.opacity = '1';
+            
+            // Mostrar/ocultar áreas
+            gameArea.classList.remove('hidden');
+            celebrationArea.classList.add('hidden');
+            
+            // Limpiar canvas
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Enfocar input
+            cityInput.focus();
+        });
+
+        // Enfocar input al cargar
+        window.addEventListener('load', () => {
+            cityInput.focus();
+        });
+
+        // Ajustar canvas al cambiar tamaño
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('confettiCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
+
