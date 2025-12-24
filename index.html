@@ -302,20 +302,18 @@
                     >
                 </div>
 
-                <button class="btn-primary" id="guessBtn">Saiatu 🚀</button>
-                <button class="btn-hint" id="hintBtn">Beste pista bat 💡</button>
+                <button class="btn-primary" id="guessBtn">Saiatu</button>
+                <button class="btn-hint" id="hintBtn">Beste pista bat</button>
             </div>
 
             <div id="celebrationArea" class="celebration hidden">
                 <span class="celebration-emoji">🏰✨</span>
                 <div class="message success show" id="finalMessage"></div>
             </div>
-
-            <button class="btn-secondary" id="resetBtn">Reiniziatu 🔄</button>
         </div>
 
         <div class="hints-card">
-            <div class="hint-title">🗺️ Pista erabilgarriak:</div>
+            <div class="hint-title">Pista erabilgarriak:</div>
             <div class="hint-item visible" id="hint4">
                 🎵 500 milia ibiltzeko abesti bat: <button class="btn-music" id="playProclaimersBtn">▶</button>
             </div>
@@ -345,7 +343,6 @@
         const cityInput = document.getElementById('cityInput');
         const guessBtn = document.getElementById('guessBtn');
         const hintBtn = document.getElementById('hintBtn');
-        const resetBtn = document.getElementById('resetBtn');
         const messageBox = document.getElementById('messageBox');
         const attemptsUsed = document.getElementById('attemptsUsed');
         const gameArea = document.getElementById('gameArea');
@@ -390,7 +387,7 @@
                 
                 if (currentHintIndex === hintOrder.length - 1) {
                     hintBtn.disabled = true;
-                    hintBtn.textContent = 'Ez dago pista gehiago 💡';
+                    hintBtn.textContent = 'Ez dago pista gehiago';
                     hintBtn.style.opacity = '0.6';
                 }
             }
@@ -600,50 +597,6 @@
             if (e.key === 'Enter') {
                 checkGuess();
             }
-        });
-
-        resetBtn.addEventListener('click', () => {
-            // Resetear estado
-            attempts = 0;
-            currentHintIndex = 0; // hint1 está visible
-            gameOver = false;
-            attemptsUsed.textContent = '0';
-            cityInput.value = '';
-            messageBox.className = 'message';
-            
-            // Resetear pistas (ocultar todas excepto hint1)
-            hintOrder.forEach((hintId, index) => {
-                const hintElement = document.getElementById(hintId);
-                if (hintElement) {
-                    if (index === 0) {
-                        // Mantener hint4 visible
-                        hintElement.classList.add('visible');
-                    } else {
-                        // Ocultar las demás
-                        hintElement.classList.remove('visible');
-                    }
-                }
-            });
-            
-            // Resetear botón de pistas
-            hintBtn.disabled = false;
-            hintBtn.textContent = 'Beste pista bat 💡';
-            hintBtn.style.opacity = '1';
-            
-            // Resetear música
-            stopAllMusic();
-            
-            // Mostrar/ocultar áreas
-            gameArea.classList.remove('hidden');
-            celebrationArea.classList.add('hidden');
-            
-            // Limpiar canvas
-            const canvas = document.getElementById('confettiCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Enfocar input
-            cityInput.focus();
         });
 
         // Enfocar input al cargar
