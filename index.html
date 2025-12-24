@@ -157,6 +157,28 @@
             margin-right: 5px;
         }
 
+        .btn-music {
+            background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 8px;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-music:active {
+            transform: scale(0.95);
+        }
+
+        .btn-music.playing {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+
         .message {
             padding: 16px;
             border-radius: 12px;
@@ -247,15 +269,23 @@
 <body>
     <canvas id="confettiCanvas"></canvas>
     
+    <audio id="proclaimersMusic" preload="auto">
+        <source src="The Proclaimers - I'm Gonna Be (500 Miles) (Official Music Video) [tbNlMtqrYS0].mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="scotlandMusic" preload="auto">
+        <source src="081914 Scotland the Brave Set.mp3" type="audio/mpeg">
+    </audio>
+    
     <div class="container">
         <div class="card">
-            <div class="title">🎁 Un regalo con destino…</div>
-            <div class="subtitle">
-                Adivina la ciudad donde nos vamos juntos. Tienes 3 intentos para descubrirlo. ¡Usa las pistas con sabiduría! 💜
+            <div class="title">🎁 Opari bat helmuga berri bat…</div>
+            <div class="subtitle">               
+   Asma ezazu elkarrekin joango garen hiri ezezaguna. 3 saiakera dituzu asmatzeko. 3 pista edukiko dituzu.Erabili pistak jakinduriaz! 💜
             </div>
 
             <div class="attempts" id="attemptsCounter">
-                Intentos: <span id="attemptsUsed">0</span>/3
+                Saiakerak: <span id="attemptsUsed">0</span>/3
             </div>
 
             <div class="message" id="messageBox"></div>
@@ -265,15 +295,15 @@
                     <input 
                         type="text" 
                         id="cityInput" 
-                        placeholder="Escribe el nombre de la ciudad"
+                        placeholder="Idatzi hiriaren izena"
                         autocapitalize="words"
                         inputmode="text"
                         autocomplete="off"
                     >
                 </div>
 
-                <button class="btn-primary" id="guessBtn">Probar 🚀</button>
-                <button class="btn-hint" id="hintBtn">Dame otra pista 💡</button>
+                <button class="btn-primary" id="guessBtn">Saiatu 🚀</button>
+                <button class="btn-hint" id="hintBtn">Beste pista bat 💡</button>
             </div>
 
             <div id="celebrationArea" class="celebration hidden">
@@ -281,19 +311,22 @@
                 <div class="message success show" id="finalMessage"></div>
             </div>
 
-            <button class="btn-secondary" id="resetBtn">Reiniciar 🔄</button>
+            <button class="btn-secondary" id="resetBtn">Reiniziatu 🔄</button>
         </div>
 
         <div class="hints-card">
-            <div class="hint-title">🗺️ Pistas disponibles:</div>
-            <div class="hint-item visible" id="hint1">
-                Ciudad de castillos, calles de piedra y un aire misterioso.
+            <div class="hint-title">🗺️ Pista erabilgarriak:</div>
+            <div class="hint-item" id="hint4">
+                🎵 500 milia ibiltzeko abesti bat: <button class="btn-music" id="playProclaimersBtn">▶</button>
             </div>
-            <div class="hint-item" id="hint2">
-                Tiene un castillo famoso en lo alto y una calle histórica llamada Royal Mile.
+            <div class="hint-item visible" id="hint1">
+                Gazteluen hiria, harrizko kaleak eta aire misteriotsua.
+            </div>
+            <div class="hint-item" id="hint5">
+                🎵 Entzun lurralde honetako ereserkia: <button class="btn-music" id="playScotlandBtn">▶</button>
             </div>
             <div class="hint-item" id="hint3">
-                Es la capital de Escocia. Hogar de un festival enorme y paisajes dramáticos.
+                Eskoziako hiriburua da.
             </div>
         </div>
     </div>
@@ -302,7 +335,9 @@
         // Estado del juego
         let attempts = 0;
         let maxAttempts = 3;
-        let currentHint = 1;
+        // Array con el orden correcto de las pistas (hint1 ya está visible)
+        const hintOrder = ['hint1', 'hint4', 'hint5', 'hint3'];
+        let currentHintIndex = 0; // hint1 está visible (índice 0)
         let gameOver = false;
 
         // Elementos del DOM
@@ -343,14 +378,18 @@
 
         // Desbloquear siguiente pista
         function unlockNextHint() {
-            if (currentHint < 3) {
-                currentHint++;
-                document.getElementById('hint' + currentHint).classList.add('visible');
-                vibrate(50); // Vibración suave
+            if (currentHintIndex < hintOrder.length - 1) {
+                currentHintIndex++;
+                const nextHintId = hintOrder[currentHintIndex];
+                const nextHintElement = document.getElementById(nextHintId);
+                if (nextHintElement) {
+                    nextHintElement.classList.add('visible');
+                    vibrate(50); // Vibración suave
+                }
                 
-                if (currentHint === 3) {
+                if (currentHintIndex === hintOrder.length - 1) {
                     hintBtn.disabled = true;
-                    hintBtn.textContent = 'No hay más pistas 💡';
+                    hintBtn.textContent = 'Ez dago pista gehiago 💡';
                     hintBtn.style.opacity = '0.6';
                 }
             }
@@ -358,9 +397,83 @@
 
         // Botón de pista
         hintBtn.addEventListener('click', () => {
-            if (currentHint < 3 && !gameOver) {
+            if (currentHintIndex < hintOrder.length - 1 && !gameOver) {
                 unlockNextHint();
             }
+        });
+
+        // Reproductores de música
+        const playProclaimersBtn = document.getElementById('playProclaimersBtn');
+        const playScotlandBtn = document.getElementById('playScotlandBtn');
+        const proclaimersMusic = document.getElementById('proclaimersMusic');
+        const scotlandMusic = document.getElementById('scotlandMusic');
+        let isPlayingProclaimers = false;
+        let isPlayingScotland = false;
+
+        // Función para detener todas las músicas
+        function stopAllMusic() {
+            if (isPlayingProclaimers) {
+                proclaimersMusic.pause();
+                proclaimersMusic.currentTime = 0;
+                playProclaimersBtn.textContent = '▶ The Proclaimers - 500 Miles';
+                playProclaimersBtn.classList.remove('playing');
+                isPlayingProclaimers = false;
+            }
+            if (isPlayingScotland) {
+                scotlandMusic.pause();
+                scotlandMusic.currentTime = 0;
+                playScotlandBtn.textContent = '▶ Scotland the Brave';
+                playScotlandBtn.classList.remove('playing');
+                isPlayingScotland = false;
+            }
+        }
+
+        // Reproductor The Proclaimers
+        playProclaimersBtn.addEventListener('click', () => {
+            if (isPlayingProclaimers) {
+                proclaimersMusic.pause();
+                proclaimersMusic.currentTime = 0;
+                playProclaimersBtn.textContent = '▶ The Proclaimers - 500 Miles';
+                playProclaimersBtn.classList.remove('playing');
+                isPlayingProclaimers = false;
+            } else {
+                stopAllMusic(); // Detener otra música si está sonando
+                proclaimersMusic.play();
+                playProclaimersBtn.textContent = '⏸ Pausar música';
+                playProclaimersBtn.classList.add('playing');
+                isPlayingProclaimers = true;
+                vibrate(50);
+            }
+        });
+
+        proclaimersMusic.addEventListener('ended', () => {
+            playProclaimersBtn.textContent = '▶ The Proclaimers - 500 Miles';
+            playProclaimersBtn.classList.remove('playing');
+            isPlayingProclaimers = false;
+        });
+
+        // Reproductor Scotland the Brave
+        playScotlandBtn.addEventListener('click', () => {
+            if (isPlayingScotland) {
+                scotlandMusic.pause();
+                scotlandMusic.currentTime = 0;
+                playScotlandBtn.textContent = '▶ Scotland the Brave';
+                playScotlandBtn.classList.remove('playing');
+                isPlayingScotland = false;
+            } else {
+                stopAllMusic(); // Detener otra música si está sonando
+                scotlandMusic.play();
+                playScotlandBtn.textContent = '⏸ Pausar música';
+                playScotlandBtn.classList.add('playing');
+                isPlayingScotland = true;
+                vibrate(50);
+            }
+        });
+
+        scotlandMusic.addEventListener('ended', () => {
+            playScotlandBtn.textContent = '▶ Scotland the Brave';
+            playScotlandBtn.classList.remove('playing');
+            isPlayingScotland = false;
         });
 
         // Confetti
@@ -441,7 +554,7 @@
 
             // Validar que no esté vacío
             if (!guess.trim()) {
-                showMessage('Escribe una ciudad 😊', 'error');
+                showMessage('Idatzi hiri bat 😊', 'error');
                 vibrate(50);
                 return;
             }
@@ -465,12 +578,12 @@
                     showCelebration(false);
                 } else {
                     // Aún quedan intentos
-                    showMessage('Nope 😅 Intenta otra vez', 'fail');
+                    showMessage('Ez 😅 Saiatu berriro', 'fail');
                     cityInput.value = '';
                     cityInput.focus();
                     
                     // Desbloquear siguiente pista al fallar
-                    if (currentHint < 3) {
+                    if (currentHintIndex < hintOrder.length - 1) {
                         setTimeout(() => {
                             unlockNextHint();
                         }, 500);
@@ -491,20 +604,33 @@
         resetBtn.addEventListener('click', () => {
             // Resetear estado
             attempts = 0;
-            currentHint = 1;
+            currentHintIndex = 0; // hint1 está visible
             gameOver = false;
             attemptsUsed.textContent = '0';
             cityInput.value = '';
             messageBox.className = 'message';
             
-            // Resetear pistas
-            document.getElementById('hint2').classList.remove('visible');
-            document.getElementById('hint3').classList.remove('visible');
+            // Resetear pistas (ocultar todas excepto hint1)
+            hintOrder.forEach((hintId, index) => {
+                const hintElement = document.getElementById(hintId);
+                if (hintElement) {
+                    if (index === 0) {
+                        // Mantener hint1 visible
+                        hintElement.classList.add('visible');
+                    } else {
+                        // Ocultar las demás
+                        hintElement.classList.remove('visible');
+                    }
+                }
+            });
             
             // Resetear botón de pistas
             hintBtn.disabled = false;
-            hintBtn.textContent = 'Dame otra pista 💡';
+            hintBtn.textContent = 'Beste pista bat 💡';
             hintBtn.style.opacity = '1';
+            
+            // Resetear música
+            stopAllMusic();
             
             // Mostrar/ocultar áreas
             gameArea.classList.remove('hidden');
