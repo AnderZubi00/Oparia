@@ -246,6 +246,16 @@
             display: block;
         }
 
+        .celebration-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            object-fit: cover;
+        }
+
         @media (max-width: 400px) {
             .card {
                 padding: 25px 20px;
@@ -307,7 +317,7 @@
             </div>
 
             <div id="celebrationArea" class="celebration hidden">
-                <span class="celebration-emoji">🏰✨</span>
+                <img id="successImage" class="celebration-image hidden" src="" alt="Destino Edimburgo">
                 <div class="message success show" id="finalMessage"></div>
             </div>
         </div>
@@ -348,6 +358,7 @@
         const gameArea = document.getElementById('gameArea');
         const celebrationArea = document.getElementById('celebrationArea');
         const finalMessage = document.getElementById('finalMessage');
+        const successImage = document.getElementById('successImage');
 
         // Función para normalizar texto
         function normalizeText(text) {
@@ -534,13 +545,17 @@
             celebrationArea.classList.remove('hidden');
             
             if (success) {
-    finalMessage.textContent = '✅ BAI! Helmuga EDIMBURGO da 🏰✨\n\nElkarrekin joango gara hiri magiko hau ezagutzera. Maleta prestatzen hasi! 💜';
-    vibrate([100, 50, 100, 50, 200]); // Pozeko bibrazioa
-} else {
-    finalMessage.textContent = '💜 Helmuga... EDIMBURGO da! 🏰✨\n\nAsmatu ez baduzu ere, hiri zoragarri honetara elkarrekin joango gara. Abentura ahaztezina izango da! 🎉';
-    vibrate([100, 100, 100]); // Bibrazio leuna
-}
-
+                // Mostrar imagen solo cuando se acierta
+                successImage.src = 'IMG_4642.webp';
+                successImage.classList.remove('hidden');
+                finalMessage.textContent = '✅ BAI! Gure helmuga berria EDIMBURGO da 🏰✨\n\nElkarrekin joango gara hiri magiko hau ezagutzera. Maleta prestatzen hasi! 💜';
+                vibrate([100, 50, 100, 50, 200]); // Pozeko bibrazioa
+            } else {
+                // Ocultar imagen cuando no se acierta
+                successImage.classList.add('hidden');
+                finalMessage.textContent = '💜 Helmuga... EDIMBURGO da! 🏰✨\n\nAsmatu ez baduzu ere, hiri zoragarri honetara elkarrekin joango gara. Abentura ahaztezina izango da! 🎉';
+                vibrate([100, 100, 100]); // Bibrazio leuna
+            }
             
             createConfetti();
         }
