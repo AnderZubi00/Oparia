@@ -11,19 +11,24 @@
             box-sizing: border-box;
         }
 
+        html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-image: url('bc0cbec0-a632-4977-b9dd-d56edd4eee5b.webp');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            margin: 0;
+            padding: 20px;
             min-height: 100vh;
+            min-height: -webkit-fill-available;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
             color: #1a202c;
+            position: relative;
+            overflow-x: hidden;
         }
         
         body::before {
@@ -31,10 +36,42 @@
             position: fixed;
             top: 0;
             left: 0;
+            right: 0;
+            bottom: 0;
             width: 100%;
             height: 100%;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            background-image: url('bc0cbec0-a632-4977-b9dd-d56edd4eee5b.webp');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            z-index: -2;
+            pointer-events: none;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
             background: rgba(0, 0, 0, 0.08);
-            z-index: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Asegurar que el fondo cubra toda la pantalla en móvil */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                min-height: -webkit-fill-available;
+            }
         }
         
         body > * {
@@ -418,6 +455,12 @@
         }
 
         @media (max-width: 400px) {
+            body {
+                padding: 15px;
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+            }
+
             .card {
                 padding: 25px 20px;
             }
@@ -433,6 +476,39 @@
 
             input[type="text"] {
                 font-size: 16px;
+            }
+        }
+        
+        /* Asegurar fondo completo en todos los dispositivos móviles */
+        @media (max-width: 768px) {
+            body {
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+            }
+            
+            body::before {
+                background-attachment: scroll;
+                background-size: cover;
+                background-position: center center;
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+                height: 100%;
+            }
+            
+            body::after {
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+                height: 100%;
+            }
+        }
+        
+        /* Solución especial para iOS */
+        @supports (-webkit-touch-callout: none) {
+            body::before,
+            body::after {
+                height: 100%;
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
             }
         }
     </style>
@@ -804,6 +880,9 @@
                 vibrate([100, 100, 100]); // Bibrazio leuna
             }
             
+            // Actualizar altura del fondo después de mostrar nuevo contenido
+            setTimeout(updateBackgroundHeight, 100);
+            
             createConfetti();
         }
 
@@ -862,17 +941,57 @@
             }
         });
 
+        // Asegurar que el fondo siempre cubra toda la pantalla
+        function updateBackgroundHeight() {
+            const body = document.body;
+            const html = document.documentElement;
+            const bodyHeight = Math.max(
+                body.scrollHeight,
+                body.offsetHeight,
+                html.clientHeight,
+                html.scrollHeight,
+                html.offsetHeight
+            );
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            const maxHeight = Math.max(bodyHeight, viewportHeight);
+            
+            // Asegurar que el body tenga al menos la altura del viewport
+            body.style.minHeight = viewportHeight + 'px';
+            
+            // Actualizar los pseudo-elementos
+            const style = document.createElement('style');
+            style.id = 'background-fix';
+            style.textContent = `
+                body::before,
+                body::after {
+                    height: ${maxHeight}px !important;
+                    min-height: ${viewportHeight}px !important;
+                }
+            `;
+            
+            const existingStyle = document.getElementById('background-fix');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            document.head.appendChild(style);
+        }
+
         // Enfocar input al cargar
         window.addEventListener('load', () => {
             cityInput.focus();
+            updateBackgroundHeight();
         });
 
-        // Ajustar canvas al cambiar tamaño
+        // Ajustar canvas y fondo al cambiar tamaño
         window.addEventListener('resize', () => {
             const canvas = document.getElementById('confettiCanvas');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            updateBackgroundHeight();
         });
+        
+        // Asegurar fondo completo después de cargar el contenido
+        window.addEventListener('DOMContentLoaded', updateBackgroundHeight);
     </script>
 </body>
 </html>
