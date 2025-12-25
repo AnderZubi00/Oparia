@@ -527,7 +527,7 @@
     <div class="container">
         <div class="card">
             <div class="title">🎁 Opari, bat helmuga berri bat…</div>
-            <div class="subtitle">               
+            <div class="subtitle" id="subtitleText">               
    Asma ezazu elkarrekin joango garen hiri ezezaguna. 3 saiakera dituzu asmatzeko. 4 pista edukiko dituzu.Erabili pistak jakinduriaz! 💜
             </div>
 
@@ -584,7 +584,7 @@
             </div>
         </div>
 
-        <div class="hints-card">
+        <div class="hints-card" id="hintsCard">
             <div class="hint-title">Pista erabilgarriak:</div>
             <div class="hint-item visible" id="hint4">
                 🎵 500 milia ibiltzeko abesti bat: <button class="btn-music" id="playProclaimersBtn">▶</button>
@@ -621,6 +621,8 @@
         const celebrationArea = document.getElementById('celebrationArea');
         const finalMessage = document.getElementById('finalMessage');
         const carouselWrapper = document.getElementById('carouselWrapper');
+        const subtitleText = document.getElementById('subtitleText');
+        const hintsCard = document.getElementById('hintsCard');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const carouselDots = document.getElementById('carouselDots');
@@ -863,15 +865,42 @@
             const carouselContainer = document.getElementById('imageCarousel');
             
             if (success) {
+                // Ocultar pistas y subtítulo cuando se acierta
+                if (subtitleText) {
+                    subtitleText.style.display = 'none';
+                }
+                if (hintsCard) {
+                    hintsCard.style.display = 'none';
+                }
                 // Mostrar carrusel solo cuando se acierta
                 if (carouselContainer) {
                     carouselContainer.style.display = 'block';
                 }
                 currentSlide = 0;
                 initCarousel();
-                finalMessage.textContent = '✅ BAI! Gure helmuga berria EDIMBURGO da 🏰✨\n\nElkarrekin joango gara hiri magiko hau ezagutzera. Maleta prestatzen hasi! 💜';
+                finalMessage.textContent = 'BAI! Gure helmuga berria EDIMBURGO da 🏰✨\n\nElkarrekin joango gara hiri magiko hau ezagutzera. Maleta prestatzen hasi! 💜';
                 vibrate([100, 50, 100, 50, 200]); // Pozeko bibrazioa
+                
+                // Reproducir la canción de 500 Miles automáticamente
+                if (proclaimersMusic) {
+                    // Detener cualquier otra música que esté sonando
+                    if (scotlandMusic) {
+                        scotlandMusic.pause();
+                        scotlandMusic.currentTime = 0;
+                    }
+                    proclaimersMusic.currentTime = 0;
+                    proclaimersMusic.play().catch(error => {
+                        console.log('Error al reproducir música:', error);
+                    });
+                }
             } else {
+                // Mantener visibles pistas y subtítulo cuando no se acierta
+                if (subtitleText) {
+                    subtitleText.style.display = 'block';
+                }
+                if (hintsCard) {
+                    hintsCard.style.display = 'block';
+                }
                 // Ocultar carrusel cuando no se acierta
                 if (carouselContainer) {
                     carouselContainer.style.display = 'none';
